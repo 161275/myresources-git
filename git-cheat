@@ -15,3 +15,11 @@ git status
 -> staged (added and ready to commit)
 -> unmodified (unchanged file)
 
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+
+
+git init
+git remote add origin <link to repo>
+git branch -M main
+git push origin main
