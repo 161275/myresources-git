@@ -22,4 +22,4 @@ Changes to be committed:
 git init
 git remote add origin <link to repo>
 git branch -M main
-git push origin main
+git push -u origin main
