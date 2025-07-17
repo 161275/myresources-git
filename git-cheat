@@ -1,0 +1,17 @@
+Git- VCS
+free and opensource
+fast and scalable
+
+# git --version
+
+#configuring git
+git config --global user.name "<name>"
+git config --global user.email "ees@gmail"
+git config --list
+
+git status
+-> untracked files. #git is unaware about these files(newly created and never added and commited)
+-> modified (changes n files)
+-> staged (added and ready to commit)
+-> unmodified (unchanged file)
+
