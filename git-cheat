@@ -25,3 +25,18 @@ git branch -M main
 git pull origin main (if created readme.md)
 git push -u origin main
 
+## new branch
+git checkout -b branch1           #create new branch
+git branch                        # to check in which branch we are in
+git checkout <branch name>                # to change the working branch
+git branch -d <branch name>       # should run from differnt branch
+
+
+#Merging code of 2 branches
+#way1 
+
+git diff <branch name>
+git merge <branche name>
+
+##way2
+create a PR
