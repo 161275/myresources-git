@@ -1,0 +1,6 @@
+prometheus-3.5.0.linux-amd64]$ ps aux | grep './prometheus --config.file=prometheus.yml' | grep -v grep | awk '{print $2}' | xargs kill -9
+
+sudo vi /etc/systemd/system/prometheus.service      ##to create a sevice on linux
+https://www.youtube.com/watch?v=Sws9rd_tKHs&list=PLVCgi5HZ0-Ytx5J5fp7A4HG5HreQ-7ZMg&index=6 (Ref)
+
+cat /etc/os-release

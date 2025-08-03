@@ -44,9 +44,9 @@ msg.set_content(body, subtype="html")
 
 # --- Add attachment ---
 if args.p == 1:
-    attachment_path = resume_dir + resume_file[1]
+    attachment_path = resume_dir + resume_file[0]
 elif args.p == 2:
-    attachment_path = resume_dir  + resume_file[2]
+    attachment_path = resume_dir  + resume_file[1]
 
 try:
     with open(attachment_path, "rb") as f:
