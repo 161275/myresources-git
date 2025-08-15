@@ -5,7 +5,7 @@ import mimetypes
 from email.message import EmailMessage
 
 resume_dir = "./resume_dir/" 
-resume_file = ["resume_nish_2.pdf","resume_nish_2_SRE.pdf"]
+resume_file = ["resume_nish_devops.pdf","resume_nish_SRE.pdf"]
 
 # ---- CONFIGURE THESE ----
 your_email = "nishchalgarg123@gmail.com"
