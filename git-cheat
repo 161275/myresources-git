@@ -18,6 +18,8 @@ git status
 Changes to be committed:
   (use "git rm --cached <file>..." to unstage)
 
+git rev-parse --show-toplevel           ###tells about root of repo
+rm -rf .git   ###to remove git from a dir
 
 git init
 git remote add origin <link to repo>
@@ -46,6 +48,8 @@ create a PR
 1. staged changes(added)
 git reset <filename>
 git reset ##for multiple files
+git restore --staged <filename>
+git rm --cached file.txt      ==> add it to .gitignore
 
 2. commited changes (for one commit)
 git reset HEAD~1

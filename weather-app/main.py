@@ -8,7 +8,7 @@ def main():
     dfmt: str = '%d/%m/%y'
     days: list[str] = sorted(list({f'{date.date:{dfmt}}' for date in weather_details}))
     print(days)
-    print(weather_details)
+    # print(weather_details)
 
     for day in days:
         print(day)

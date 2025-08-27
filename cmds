@@ -18,6 +18,10 @@ export PATH="/usr/local/pgsql/bin:$PATH"
 source ~/.bashrc
 which psql
 
+ORDER BY.  ASC DESC
+LIMIT
+LIKE 'ni%'
+LIKE 'DO_'
 
 
 createdb
@@ -118,3 +122,53 @@ ROLLBACK TO my_savepoint;
 UPDATE accounts SET balance = balance + 100.00
     WHERE name = 'Wally';
 COMMIT;
+
+
+
+
+Docker commands:
+
+Docker run <container id/name>. download image runs and exit
+a conatiner is alive as long as process inside it. 
+run <image/cont id>   <cmd> 
+exec on running container
+pull <img>
+ps 
+ps -a
+start/stop <containername /id>
+rm <cont name/id>
+image
+rmi <img name/id>.  #stop amd delete all containes of this image
+
+docker run codecloud/simple-webaapp   => run in attach mode to terminal
+docker run -d codecloud/simple-webaapp. => runs in bg in detach mode
+docker attach id                        => to attach again
+docker inspect <id/name>
+docker run -d --name myweb <image>
+docker run -e APP_COLOR=blue simple-webapp           //env-var is set.
+
+
+Deploy a private registry
+docker run -d -p 5000:5000 --name registry registry:2
+docker image tag <image> localhost:5000/<image>
+docker push localhost:5000/<image>
+docker pull localhost:5000/<image>
+
+docker run --cpus=.5 ubuntu
+docker run --memory=100m ubuntu
+docker history <image name>
+
+docker network create --driver bridge --subnet 182.18.0.0/16 custom-isolated-network
+docker inspect network bridge(network name)
+docker network ls
+
+kubectl create -f replicaset-definition.yml
+kubectl get replicaset
+kubectl delete replicaset myapp-replicaset
+kubectl replace -f replicaset-definition.yml
+kubectl scale -replicas=6 -f replicaset-definition.yml
+kubectl apply -f deployment-def.yml
+kubectl set image deploy <deployment name> <container_name=new image name>
+kubectl rollout status deployment/myapp-deployment
+kubectl rollout history deployment/myapp-deployment
+kubectl rollout undo deployment/myapp-deployment
