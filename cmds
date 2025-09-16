@@ -18,157 +18,139 @@ export PATH="/usr/local/pgsql/bin:$PATH"
 source ~/.bashrc
 which psql
 
-ORDER BY.  ASC DESC
-LIMIT
-LIKE 'ni%'
-LIKE 'DO_'
-
-
-createdb
-dropdb
-CREATE TABLE weather (
-    city            varchar(80),
-    temp_lo         int,           -- low temperature
-    temp_hi         int,           -- high temperature
-    prcp            real,          -- precipitation
-    date            date
-);
-CREATE TABLE cities (
-    name            varchar(80),
-    location        point
-);
-DROP TABLE tablename;
-INSERT INTO weather VALUES ('San Francisco', 46, 50, 0.25, '1994-11-27');
-INSERT INTO cities VALUES ('San Francisco', '(-194.0, 53.0)');
-INSERT INTO weather (city, temp_lo, temp_hi, prcp, date)
-    VALUES ('San Francisco', 43, 57, 0.0, '1994-11-29');
-INSERT INTO weather (date, city, temp_hi, temp_lo)
-    VALUES ('1994-11-29', 'Hayward', 54, 37);
-COPY weather FROM '/home/user/weather.txt';
-
-SELECT * FROM weather;
-SELECT city, temp_lo, temp_hi, prcp, date FROM weather;
-SELECT city, (temp_hi+temp_lo)/2 AS temp_avg, date FROM weather;
-SELECT * FROM weather
-    WHERE city = 'San Francisco' AND prcp > 0.0;
-SELECT * FROM weather
-    ORDER BY city;
-SELECT * FROM weather
-    ORDER BY city, temp_lo;
-SELECT DISTINCT city
-    FROM weather;
-SELECT DISTINCT city
-    FROM weather
-    ORDER BY city;
-SELECT * FROM weather JOIN cities ON city = name;
-SELECT city, temp_lo, temp_hi, prcp, date, location
-    FROM weather JOIN cities ON city = name;
-SELECT weather.city, weather.temp_lo, weather.temp_hi,
-       weather.prcp, weather.date, cities.location
-    FROM weather JOIN cities ON weather.city = cities.name;
-SELECT *
-    FROM weather, cities
-    WHERE city = name;
-SELECT *
-    FROM weather LEFT OUTER JOIN cities ON weather.city = cities.name;
-SELECT w1.city, w1.temp_lo AS low, w1.temp_hi AS high,
-       w2.city, w2.temp_lo AS low, w2.temp_hi AS high
-    FROM weather w1 JOIN weather w2
-        ON w1.temp_lo < w2.temp_lo AND w1.temp_hi > w2.temp_hi;
-SELECT *
-    FROM weather w JOIN cities c ON w.city = c.name;
-SELECT max(temp_lo) FROM weather;
-SELECT city FROM weather WHERE temp_lo = max(temp_lo);     WRONG
-SELECT city FROM weather
-    WHERE temp_lo = (SELECT max(temp_lo) FROM weather);
-SELECT city, count(*), max(temp_lo)
-    FROM weather
-    GROUP BY city;
-SELECT city, count(*), max(temp_lo)
-    FROM weather
-    GROUP BY city
-    HAVING max(temp_lo) < 40;
-SELECT city, count(*), max(temp_lo)
-    FROM weather
-    WHERE city LIKE 'S%'            -- (1)
-    GROUP BY city;
-SELECT city, count(*) FILTER (WHERE temp_lo < 45), max(temp_lo)
-    FROM weather
-    GROUP BY city;
-UPDATE weather
-    SET temp_hi = temp_hi - 2,  temp_lo = temp_lo - 2
-    WHERE date > '1994-11-28';
-DELETE FROM weather WHERE city = 'Hayward';
-
-
-##Transaction
-UPDATE accounts SET balance = balance - 100.00
-    WHERE name = 'Alice';
-UPDATE branches SET balance = balance - 100.00
-    WHERE name = (SELECT branch_name FROM accounts WHERE name = 'Alice');
-UPDATE accounts SET balance = balance + 100.00
-    WHERE name = 'Bob';
-UPDATE branches SET balance = balance + 100.00
-    WHERE name = (SELECT branch_name FROM accounts WHERE name = 'Bob');
-
-BEGIN;
-UPDATE accounts SET balance = balance - 100.00
-    WHERE name = 'Alice';
-SAVEPOINT my_savepoint;
-UPDATE accounts SET balance = balance + 100.00
-    WHERE name = 'Bob';
--- oops ... forget that and use Wally's account
-ROLLBACK TO my_savepoint;
-UPDATE accounts SET balance = balance + 100.00
-    WHERE name = 'Wally';
-COMMIT;
 
 
 
 
-Docker commands:
-
-Docker run <container id/name>. download image runs and exit
-a conatiner is alive as long as process inside it. 
-run <image/cont id>   <cmd> 
-exec on running container
-pull <img>
-ps 
-ps -a
-start/stop <containername /id>
-rm <cont name/id>
-image
-rmi <img name/id>.  #stop amd delete all containes of this image
-
-docker run codecloud/simple-webaapp   => run in attach mode to terminal
-docker run -d codecloud/simple-webaapp. => runs in bg in detach mode
-docker attach id                        => to attach again
-docker inspect <id/name>
-docker run -d --name myweb <image>
-docker run -e APP_COLOR=blue simple-webapp           //env-var is set.
+df -h 
+fdisk ls
+fdisk <diskname>   #create partition on disk
+/etc/fstab
+mount
+umount
+mkfs 
+mkswap
+swapon -a 
+swapoff 
+swapon -c
+free -h
 
 
-Deploy a private registry
-docker run -d -p 5000:5000 --name registry registry:2
-docker image tag <image> localhost:5000/<image>
-docker push localhost:5000/<image>
-docker pull localhost:5000/<image>
+ls --help
+man ls
+man man
+man 1 printf
+man 3 printf
+apropos <command keword> first time may be an error rely on dropdb
+sudo mandb
+apropos -s 1,8  <command keword>
 
-docker run --cpus=.5 ubuntu
-docker run --memory=100m ubuntu
-docker history <image name>
+stat target_file
+#####hard link
+ln target_file link_file.  #cant create a hard link on a dir also cant create a hard on two different file systems
+# changing the permission of one link leads to change the permission of all links because inode update the permission
+# delete a file => technically data blocks are not erased but marked unused so that system can then with new data
 
-docker network create --driver bridge --subnet 182.18.0.0/16 custom-isolated-network
-docker inspect network bridge(network name)
-docker network ls
+####soft link
+ln -s target_file link_file
+can create the symbolic link for dir also
+but symlink broken if target file is moved ar deleted
 
-kubectl create -f replicaset-definition.yml
-kubectl get replicaset
-kubectl delete replicaset myapp-replicaset
-kubectl replace -f replicaset-definition.yml
-kubectl scale -replicas=6 -f replicaset-definition.yml
-kubectl apply -f deployment-def.yml
-kubectl set image deploy <deployment name> <container_name=new image name>
-kubectl rollout status deployment/myapp-deployment
-kubectl rollout history deployment/myapp-deployment
-kubectl rollout undo deployment/myapp-deployment
+tail -n 20 log_file (by default 10)
+head -n 20 log_file (by default 10)
+sed -i 's/canda/canada/g' userinfo.txt (-i(in place) without i only preview no change)
+(s substitute search and replace , g for globalall occurance in the lin, w/o g only first occurance will be replace)
+ sed -i 's/disabled/enabled/gi' values.conf
+  sed -i '500,2000s/enabled/disabled/gi' values.conf
+  sed -i 's~#%$2jh//238720//31223~$2//23872031223~g' /home/bob/data.txt
+ cut -d ' ' -f 1 userinfo.txt
+ sort countries.txt | uniq
+
+ sudo systemctl reboot 
+ sudo syatemctl poweroff                    
+ --force --force 
+ sudo shutdown 2:00 or +15
+ sudo shutdown -r 2:00 or +15
+ --reboot
+
+ systemctl get-default
+ sudo systemctl set-default multi-user.target
+ sudo systemctl isolate graphical.target
+ emergency.target
+ rescue.target
+
+ sudo journalctl --unit=ssh.service -n 20 --no-pager
+ 10 5 db_cleanup /usr/bin/touch /root/anacron_created_this
+
+ sudo systemctl restart nginx
+
+
+ df -h
+ du -sh /usr/
+ free -h
+ lscpu
+ip link (networ devices or NIC)
+ip -c addr      (colord ip address of interfaces)
+sudo ip link set dev <nic> up/down
+sudo ip addr add/delete 10.0.0.40/24 dev enp0s8        (assign ip address to an interface)
+sudo netplan get
+cd /etc/netplan
+cat 50-cloud-init.yaml
+sudo netplan apply
+sudo netplan try
+
+nish@nishmac:~$ route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         _gateway        0.0.0.0         UG    100    0        0 enp0s1
+192.168.64.0    0.0.0.0         255.255.255.0   U     100    0        0 enp0s1
+ip route add <dest ip> via <gateway ip>
+ip route add defalt via <gateway ip>        (to any unkwon n/w use gateway ip)
+
+nish@nishmac:~$ cat /proc/sys/net/ipv4/ip_forward (by setting it to 1 the device will act as route and all nic of the device communicate to all the nic)
+0
+nish@nishmac:~$ cat /etc/sysctl.conf | grep net.ipv4.ip_forward
+#net.ipv4.ip_forward=1
+
+cat /etc/hosts 
+cat /etc/resolv.conf    => nameserver 
+By default /etc/hosts have priority over /etc/resolv.conf 
+but can be changed using /etc/nsswitch.conf
+hosts:          files mdns4_minimal [NOTFOUND=return] dns (alter the position of files and dns)
+
+
+nslookup and dig(more detailed o/p) dont look/query for entries in /etc/hosts only resolve from dns servers
+
+createnew n/w namespace on linux host
+ip netns add red
+ip netns ad blue
+ip netns ( to list n/w ns)
+ip netns exec red ip link / ip -n red link (nic for ns i.e ip link will be executed in red n/w namespace)
+ip netns exec red arp
+ip netns exec red route
+ip link add veth-red type veth peer name veth-blue. (connecting to namespaces)
+ip link set veth-red netns red (attach virtual interfaces to namespaces)
+ip link set veth-blue netns blue
+ip -n red addr add 192.168.15.1 dev veth-red (assign ip to veth)
+ip -n blue addr add 192.168.15.2 dev veth-blue
+ip -n red link set veth-red up
+ip -n blue link set veth-blue up
+ip netns exec red ping 192.168.15.2. (now successfully receieving icmp response back)
+ip -n red link delete veth-red ( delete and automaticall other side connecting i/f veth-blue will automatically delete)
+
+now added more namespace so to connect each other use virtual switch
+
+ip link add v-net-0 type bridge (create a n/w i/f on host)
+ip link ( the above interface will also be listed )
+ip link set dev v-net-0 up ( it will act as switch for namespace and i/f for the host)
+ip link add veth-red type veth peer name veth-eth-br
+ip link add veth-red type veth peer name veth-eth-br
+ip link set veth-red/blue netns red/blue
+ip link set veth-red/blue-br master v-net-0
+ip -n red addr add 192.168.15.1 dev veth-red (assign ip to veth)
+ip -n blue addr add 192.168.15.2 dev veth-blue
+ip -n red link set veth-red up
+ip -n blue link set veth-blue up
+ip addr add 192.168.15.5/24 dev v-net-0      (now host and virtual internal n/w can connect)
+iptables -t mat -A POSTROUTING -s 192.168.15.0/24 -j MASQUERADE
+iptables -t nat -A PREROUTING --dport 80 --to-destination 192.168.15.2:80 -j DNAT

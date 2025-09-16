@@ -31,7 +31,7 @@ git push -u origin main
 git checkout -b branch1           #create new branch
 git branch                        # to check in which branch we are in
 git checkout <branch name>                # to change the working branch
-git branch -d <branch name>       # should run from differnt branch
+git branch -d <branch name>       # should run from differnt branch to delete the branch
 
 
 #Merging code of 2 branches

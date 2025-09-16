@@ -23,5 +23,20 @@ Akamai
 NAukari resume headline.
 Cloud Operations Engineer with 3.7 years of experience in Cloud Operations,Cloud Infrastructure,Cloud Computing,Continuous Integration,Incident Management,Linux Administration,python,Shell Scripting,Nginx,NAGIOS,Ci/Cd,Ansible,Jenkins,Docker,AWS
 
+How we will connect new node in kubenetes cluster with prometheus. what config changes
+scaling of storage in aws
+if pod is crashing again and again what will you check
+states of pod
+after deploying new build the pod is restarting again and again
+
+
+provide passwordless access to new employee for multiple server
+ssh public key and private key
+last 10 days log files only
+
+How to assign different IAM roles to different PODs running on the same worker node
+
+
+
 
 
