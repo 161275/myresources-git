@@ -1,0 +1,467 @@
+kubectl get roles --all-namespaces --no-headers | wc -l
+
+
+
+
+
+
+
+
+Docker run <container id/name>. download image runs and exit
+a conatiner is alive as long as process inside it. 
+run <image/cont id>   <cmd> 
+exec on running container
+pull <img>
+ps 
+ps -a
+start/stop <containername /id>
+rm <cont name/id>
+image
+rmi <img name/id>.  #stop amd delete all containes of this image
+
+docker run codecloud/simple-webaapp   => run in attach mode to terminal
+docker run -d codecloud/simple-webaapp. => runs in bg in detach mode
+docker attach id                        => to attach again
+docker inspect <id/name>
+docker run -d --name myweb <image>
+docker run -e APP_COLOR=blue simple-webapp           //env-var is set.
+ --entrypoint sleep2.0      override entrypoint in dockerfile
+ ## in pod def
+ spec:
+   containers:
+     - name: 
+       image:
+       command: ["sleep"]       => Entrypoint instruction 
+       args: ["10"]
+       env:
+         - name:
+           value:
+         - name:
+           value:
+        envFrom:
+        - configMapRef/secretRef:
+              name: app-config
+       config
+kubectl create configmap app-config --from-literal=APP_COLOR=blue
+                                    --from-literal=APP_MOD=prod
+                         app-config --from-file=<path-to-file>. app_config.properties
+config-map.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+   APP_COLOR: blue
+   App_MODE: prod
+
+kubectl create secret app-secret --from-literal=
+                                 --from-file= 
+
+Deploy a private registry
+docker run -d -p 5000:5000 --name registry registry:2
+docker image tag <image> localhost:5000/<image>
+docker push localhost:5000/<image>
+docker pull localhost:5000/<image>
+
+
+docker run --cpus=.5 ubuntu
+docker run --memory=100m ubuntu
+docker history <image name>
+docker system df -v
+docker network create --driver bridge --subnet 182.18.0.0/16 custom-isolated-network
+docker network create --driver bridge --subnet 182.18.0.0/24 --gateway 182.18.0.1 wp-mysql-network
+docker inspect network bridge(network name)
+docker network ls
+docker info
+docker run --name alpine-2 --network=none alpine
+
+kubectl create -f replicaset-definition.yml
+kubectl get replicaset
+kubectl delete replicaset myapp-replicaset
+kubectl replace -f replicaset-definition.yml
+kubectl scale -replicas=6 -f replicaset-definition.yml
+kubectl scale deployment <deployment name> --replicas=6
+kubectl apply -f deployment-def.yml
+kubectl set image deployment <deployment name> <container_name=new image name>
+kubectl rollout status deployment/myapp-deployment
+kubectl rollout history deployment/myapp-deployment
+kubectl rollout undo deployment/myapp-deployment
+
+kubectl run nginx --image=nginx -l tier=db
+kubectl create deployment --image=nginx nginx --replicas=4 --dry-run=client -o yaml > nginx-deployment.yaml
+kubectl expose deployment nginx --port 80
+kubectl edit deployment nginx
+controlplane ~ ➜  kubectl expose pod httpd --port=80 --name=httpd    ####service/httpd exposed
+kubectl expose pod redis --name=redis-service --port 6379
+kubectl expose pod httpd --name httpd --port 80 --type ClusterIP
+
+kubectl get pods --selector app=App1,tier=db
+kubectl taint nodes node-name key=value:taint-effct
+kubectl label node node01 color=blue
+nish@Mac .ssh % kubectl describe node docker-desktop | grep Taint       #####docker-desktop is a masternode(since its a one node cluster we cant set taint)
+Taints:             <none>
+ps -aux | grep kubelet
+kubectl get priorityclass
+kubectl get pods -o custom-columns="NAME:.metadata.name,PRIORITY:.spec.priorityClassName"
+kubectl get pod critical-app -o yaml > critical-app.yaml
+kube-apiserver -h | grep enable-admission-plugins
+ps -ef | grep kube-apiserver | grep admission-plugins
+controlplane /etc/kubernetes/manifests ➜  cat /root/myclaim.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: myclaim
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 0.5Gi
+
+
+minikube addons enable metrics-server
+kubectl top node
+kubectl top pod
+docker logs -f <container id>
+kubectl logs -f <pod name> <container name>
+kubectl -n elastic-stack exec -it app -- cat /log/app.log
+
+initContainers:
+  - name: sidecar
+    image: kodekloud/filebeat-configured
+    restartPolicy: Always
+    volumeMounts:
+      - name: log-volume
+        mountPath: /var/log/event-simulator
+
+###HPA
+kubectl autoscale deployment my-app --cpu-percent=50 --min=1 --max=10
+kubectl get hpa
+kubectl delete hpa my-app
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-app-hpa
+spec:
+  scaleTargetRef:
+     apiVersion: apps/v1
+     kind: Deployment
+     name: my-app
+  minReplicas: 1
+  maxReplicas: 10
+  metrics: 
+  - type: resources
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+kubectl get hpa --watch
+kubectl events hpa nginx-deployment | grep -i "ScalingReplicaSet"
+
+
+Vertical Scaling
+##Inplace Scaling (does not recreate or restart)
+FEATURE_GATE=InPlacePodVerticalScaling=true
+
+in pod def
+spec:
+  conatiners:
+  - name:
+    image:
+    resources:
+      requests:
+      limits:
+    resizePolicy:
+    - resourceName: cpu
+      restartPolicy: NotRequired
+    - resourceName: memory
+      restartPolicy: RestartContainer
+
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoScaler
+metadata:
+  name: my-app-vpa 
+spec:
+  targetRef:
+     apiVersion: apps/v1
+     kind: Deployment
+     name: my-app
+  updatePolicy:
+     updateMode: "Auto"
+  resourcePolicy:
+     containerPolicies:
+     - containerName: "my-app"
+       minAllowed:
+         cpu: "250m"
+       maxAllowed:
+         cpu: "2"
+       controlledResources: ["cpu"]
+
+kubectl get vpa flask-app -o jsonpath='{.status.recommendation.containerRecommendations[0].target.cpu}' > /root/target
+kubectl drain node-1  --ignore-daemonsets  ##gracefully terminated all the pods and created on other nodes and marked node unschedulable or cordened
+kubectl cordon node-2   #mark node unschedullable (dont delete the pods)
+kubectl uncordon node-1
+
+etcdctl --endpoints=https://[127.0.0.1]:2379 \
+--cacert=/etc/kubernetes/pki/etcd/ca.crt \
+--cert=/etc/kubernetes/pki/etcd/server.crt \
+--key=/etc/kubernetes/pki/etcd/server.key \
+snapshot save /opt/snapshot-pre-boot.db
+
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: httpd-frontend
+spec:
+  selector:
+    matchLabels:
+      app: front-end
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: front-end
+    spec:
+      containers:
+      - image: httpd:2.4-alpine
+        name: front-end
+
+RBAC authorisation
+create role and role binding for these users(passed in username passwod or token based authentication)
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+  resourceNames: ["",]
+ 
+---
+# This role binding allows "jane" to read pods in the "default" namespace.
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+- kind: User
+  name: user1 # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role #this must be Role or ClusterRole
+  name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+
+  curl -v -k https://localhost:6443/api/v1/pods -u "user1:password123"       (localhost or IP of node on which kubeapi is running)
+   
+
+
+kubeconfig
+
+apiVersion: v1
+kind: Config
+curent-context: my-kube-admin@my-kube-playground
+clusters:
+- name: my-kube-playground
+  cluster:
+    certificate-authority: ca.crt
+    server: https://my-kube-playground:6443/
+- name: development
+- name: production
+- name: google
+contexts:
+- name: dev-user@google
+  context: 
+     cluster: google
+     user: dev-user
+     namespace: finance
+- name: my-kube-admin@my-kube-playground
+  context:
+users:
+- name: my-kube-admin
+  user:
+    client-certificate: admin.crt         ##or
+    client-certification-data: <data encoded in base64>
+    client-key: admin.key 
+- name: admin
+- name: dev-user
+
+
+kubectl config view --kubeconfig=my-custom-config       (view default in ~/.kube/config)
+kubectl config use-context prod-user@production      (update current config in the file)
+kubectl config --help
+
+######ClusterRole
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cluster-adminstrator
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["nodes"]
+  verbs: ["get", "watch", "list"]
+  resourceNames: ["",]
+
+##clusterrolebinding
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cluster-admin-role-binding
+subjects:
+- kind: User
+  name: cluster-admin # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole #this must be Role or ClusterRole
+  name: cluster-adminstrator # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+
+
+  kubectl exec -it <pod name> ls /var/run/secrets/kubernetes.io/serviceaccount
+
+kubectl exec -it <pod name> cat /var/run/secrets/kubernetes.io/serviceaccount/token
+
+###Private registry
+image = <registry name docker.io>/<repo name library>/<image name nginx>
+docker login private-registry.io
+docker run private-registry.io/apps/internal-app
+
+kubectl create secret docker-registry regcred --docker-server= <private-registry.io> --docker-username= registry-user \
+--docker-password=registry-password --docker-email=registry-user@org.com
+--> docker-registry  is built-in secret type in k8
+    --docker-username=dock_user --docker-password=dock_password ---docker-server=myprivateregistry.com:5000  --docker-email=dock_user@myprivateregistry.com
+on pod.yaml
+spec:
+  imagePullSecrets:
+  - name: regcred
+
+
+######## 
+Networkpolicy
+
+DB pod lable (role: db)
+api pod label (app: api-pod)
+
+network-policy.yaml
+apiVersion: networking.k8.io/
+kind: NetwokPolicy
+metadata:
+  name: db-policy
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: api-pod
+      namespaceSelector:         ( in case of pods with same label in multiple namespaces but be want to allow only from prod namespace)
+        matchLabels:
+          name: prod
+    ports:
+    - protocol: TCP
+      port: 3306
+  egress:
+  - to:
+    - ipBlock:
+         cidr: 192.168.5.10/32
+      ports:
+      - protocol: TCP
+        port: 3306
+
+####another example
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: internal-policy
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          name: mysql
+    ports:
+    - protocol: TCP
+      port: 3306
+  - to:
+    - podSelector:
+        matchLabels:
+          name: payroll
+    ports:
+    - protocol: TCP
+      port: 8080
+  - ports:
+    - port: 53
+      protocol: TCP
+    - port: 53
+
+
+
+controlplane ~ ➜  cat /root/crd.yaml
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: internals.datasets.kodekloud.com
+spec:
+  group: datasets.kodekloud.com
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                internalLoad:
+                  type: string
+                range:
+                  type: integer
+                percentage:
+                  type: string
+  scope: Namespaced 
+  names:
+    plural: internals
+    singular: internal
+    kind: Internal
+    shortNames:
+    - int
+
+
+kind: Internal
+apiVersion: datasets.kodekloud.com/v1
+metadata:
+  name: internal-space
+  namespace: default
+spec:
+  internalLoad: "high"
+  range: 80
+  percentage: "50"
+
+
+  ## storageclass
+  ---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: delayed-volume-sc
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
