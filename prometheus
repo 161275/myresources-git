@@ -1,0 +1,45 @@
+root@prometheus-server ~ ➜  echo "processing_time_seconds 120" | curl --data-binary @- http://localhost:9091/metrics/job/video_processing
+
+root@prometheus-server ~ ➜  echo "processing_time_seconds 120"
+processing_time_seconds 120
+
+root@prometheus-server ~ ➜  curl --data-binary processing_time_seconds 120 http://localhost:9091/metrics/job/video_processing
+^C
+
+root@prometheus-server ~ ✖ curl --data-binary processing_time_second^C120 http://lo
+calhost:9091/metrics/job/video_processing
+
+root@prometheus-server ~ ✖ cat <<EOF | curl --data-binary @- http://localhost:9091/metrics/job/video_processing/instance/mp4_node1
+> # TYPE processing_time_seconds gauge
+> processing_time_seconds{quality="hd"} 120
+> # TYPE processed_videos_total gauge
+> processed_videos_total{quality="hd"} 10
+> # TYPE processed_bytes_total gauge
+> processed_bytes_total{quality="hd"} 4400
+> EOF
+
+root@prometheus-server ~ ➜  cat <<EOF | curl --data-binary @- http://localhost:9091/metrics/job/video_processing/instance/mov_node1
+> # TYPE processing_time_seconds gauge
+> processing_time_seconds{quality="hd"} 400
+> # TYPE processed_videos_total gauge
+> processed_videos_total{quality="hd"} 250
+> # TYPE processed_bytes_total gauge
+> processed_bytes_total{quality="hd"} 96000
+> EOF
+##make group
+
+root@prometheus-server ~ ➜  cat <<EOF | curl --data-binary @- http://localhost:9091/metrics/job/video_processing/instance/mp4_node1
+> # TYPE processing_time_seconds gauge
+> processing_time_seconds{quality="hd"} 999
+> EOF            ######POst only update does not touches the other matrics
+
+
+root@prometheus-server ~ ➜  cat <<EOF | curl -X PUT --data-binary @- http://localhost:9091/metrics/job/video_processing/instance/mp4_node1
+> # TYPE processing_time_seconds gauge
+> processing_time_seconds{quality="hd"} 666
+> EOF              ####PUT replace(delete older matrics and create new one)
+
+
+root@prometheus-server ~ ➜  curl -X DELETE http://localhost:9091/metrics/job/video_processing/instance/mp4_node1
+### dlete the all the matrics and group mp4_node1 alltogether
+  

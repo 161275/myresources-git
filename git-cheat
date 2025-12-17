@@ -1,3 +1,26 @@
+# 🧩 Step 1: Fetch the latest changes from remote (no merge, no pull)
+git fetch origin
+
+# 🧩 Step 2: Compare your local branch with remote branch (shows code differences)
+git diff main origin/main
+
+# 🧩 Step 3: See which commits are new on the remote (not in your local branch)
+git log main..origin/main
+
+# 🧩 Step 4: See which commits you have locally but are not pushed yet
+git log origin/main..main
+
+# 🧩 Step 5: List only the names of files that changed
+git diff --name-only main origin/main
+
+# 🧩 Step 6: Show a summary (files changed + lines added/removed)
+git diff --stat main origin/main
+
+# 🧩 Step 7: Quick combined view — what commits + what changed
+git fetch origin && git log main..origin/main --oneline && git diff --stat main origin/main
+
+
+
 Git- VCS
 free and opensource
 fast and scalable
@@ -59,7 +82,15 @@ git reset HEAD~1
  git reset <hash of commit from git file>
  git reset --hard <commit hash>
 
+git log --oneline graph
 
+git checkout main
+git merge feature1
+
+git cgeckout feature1
+git rebase main. ##rewrites history
+
+both can cause conflicts but merge=> safety and on shared branches  and rebase=> cleanup 
 
 ############### Github Action #################
 automate SDLC workflows
@@ -72,4 +103,7 @@ jobs collection of steps. => jobs
 steps actions to be taken, commands, scripts => steps
 
 dummy branch2S
+
+
+
 

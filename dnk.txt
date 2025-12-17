@@ -1,5 +1,15 @@
 kubectl get roles --all-namespaces --no-headers | wc -l
+docker images --format "{{.ID}}" | wc -l
 
+
+
+eksctl create cluster --name three-tier-cluster --region us-east-1 --node-type t2.medium --nodes-min 2 --nodes-max 2
+
+aws eks update-kubeconfig --name <cluster-name> --region <region-code>
+
+kubectl config set-context --current --namespace=<>
+
+kubectl config current-context
 
 
 
@@ -16,8 +26,12 @@ ps
 ps -a
 start/stop <containername /id>
 rm <cont name/id>
-image
+images --no-trunc
 rmi <img name/id>.  #stop amd delete all containes of this image
+docker system prune 
+docker volume prune
+docker volume ls
+docker volume create <name>
 
 docker run codecloud/simple-webaapp   => run in attach mode to terminal
 docker run -d codecloud/simple-webaapp. => runs in bg in detach mode
@@ -25,6 +39,7 @@ docker attach id                        => to attach again
 docker inspect <id/name>
 docker run -d --name myweb <image>
 docker run -e APP_COLOR=blue simple-webapp           //env-var is set.
+docker run -d --name <> --mount source=souce_dir,destination=dest_dir nginx
  --entrypoint sleep2.0      override entrypoint in dockerfile
  ## in pod def
  spec:
@@ -42,6 +57,20 @@ docker run -e APP_COLOR=blue simple-webapp           //env-var is set.
         - configMapRef/secretRef:
               name: app-config
        config
+
+env:
+  - name: MONGO_CONN_STR
+    value: mongodb://mongodb-svc:27017/todo?directConnection=true
+  - name: MONGO_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: mongo-sec
+        key: username
+  - name: MONGO_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: mongo-sec
+        key: password
 kubectl create configmap app-config --from-literal=APP_COLOR=blue
                                     --from-literal=APP_MOD=prod
                          app-config --from-file=<path-to-file>. app_config.properties
@@ -296,6 +325,7 @@ users:
 kubectl config view --kubeconfig=my-custom-config       (view default in ~/.kube/config)
 kubectl config use-context prod-user@production      (update current config in the file)
 kubectl config --help
+kubectl config view --kubeconfig=my-kube-config -o=jsonpath='{.contexts[?(@.context.user=="aws-user")].name}'
 
 ######ClusterRole
 kind: ClusterRole
@@ -465,3 +495,42 @@ metadata:
   name: delayed-volume-sc
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-wear-watch
+  namespace: app-space
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /wear
+        pathType: Prefix
+        backend:
+          service:
+           name: wear-service
+           port: 
+            number: 8080
+      - path: /watch
+        pathType: Prefix
+        backend:
+          service:
+           name: video-service
+           port:
+            number: 8080
+
+export ETCDCTL_API=3
+etcdctl put name jhon
+etcdctl get name
+etcdctl get / --prefix --keys-only
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.33/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list

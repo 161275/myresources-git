@@ -4,3 +4,6 @@ COPY short_url.py .
 
 CMD ["sh"]
 
+
+admin123
+

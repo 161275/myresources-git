@@ -19,6 +19,8 @@ Akamai
 2 3 4 6 8 10
 1 5 9 11
 
+Thales
+Jungleworks
 
 NAukari resume headline.
 Cloud Operations Engineer with 3.7 years of experience in Cloud Operations,Cloud Infrastructure,Cloud Computing,Continuous Integration,Incident Management,Linux Administration,python,Shell Scripting,Nginx,NAGIOS,Ci/Cd,Ansible,Jenkins,Docker,AWS
@@ -37,6 +39,85 @@ last 10 days log files only
 How to assign different IAM roles to different PODs running on the same worker node
 
 
+air55084
+webkul
+502 error
+ec2 vs lambda
+rds vs Aurora
+aws shield vs waf
+migrate from traditional arch to aws with zero downtime
+create infra with scalability security and fault tolerance
+HOw to prevent DDOS/ bot attack
+AWS Shield is for distributed denial of service (DDoS) protection, defending against large-scale network attacks (layers 3 and 4), while AWS WAF (Web Application Firewall) is for web application attacks (layer 7), filtering malicious requests like SQL injections and cross-site scripting. 
 
+429 error
+500 error
+slowness in the site troubleshooting steps
+OOM error java lang  => heapdump
+
+circle Interview: SRE
+on resume
+prometheus => metrics alerting configuration
+shell script 
+python script read log file
+
+Lenskart round 2:
+new deployment on k8 cluster with zero downtime
+whenever a new pod is created what is the changes in cluster on network side and other components of kubernets.
+resolve intermittent dns issue in kubernetes cluster
+architect a pipeline for 300 aplications
+troubleshoot high cpu on linux machine
+readiness probe and liveness probe
+
+airtel: SRE
+diff between docker and vm
+components of prometheus
+handling of any L1 incident with RCA
+difference between overlays and status
+crashbackloopoff troubleshooting
+python script to fetch the body content and stor in a file
+
+deepintent
+aws services - route53 difference between cname and a record
+switch between multiple k8 clusters     #set-context --current
+fetch details of EKS cluster kubecofig
+
+
+code-brew
+write a basic docker file
+write a basic terraform file
+write RCA
+tell me how you configure ci/cd pipeline
+node application run
+apache tomcat server vs nginx 
+AWS services - EC2 config (proficient level)    
+role vs policy
+sysadmin roles knowkedge -linux 
+github and bitbucket
+worked on Infra side (managing hardware / setting up network)
+
+
+if 2nd round 
+go though linux, git
+docker kubernetes terraform jenkins projects 
+prometheus concepts
+
+
+
+MyKarmma
+linkedlist
+mysql query
+
+Techahead
+what are Lambda functions
+what is ASG and LB
+how will you host a simple next js application
+
+
+
+
+
+
+            
 
 

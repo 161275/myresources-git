@@ -79,7 +79,7 @@ sed -i 's/canda/canada/g' userinfo.txt (-i(in place) without i only preview no c
  emergency.target
  rescue.target
 
- sudo journalctl --unit=ssh.service -n 20 --no-pager
+ sudo journalctl --unit=ssh.service -n 20 --no-pager           reads system logs
  10 5 db_cleanup /usr/bin/touch /root/anacron_created_this
 
  sudo systemctl restart nginx
@@ -123,7 +123,7 @@ nslookup and dig(more detailed o/p) dont look/query for entries in /etc/hosts on
 
 createnew n/w namespace on linux host
 ip netns add red
-ip netns ad blue
+ip netns add blue
 ip netns ( to list n/w ns)
 ip netns exec red ip link / ip -n red link (nic for ns i.e ip link will be executed in red n/w namespace)
 ip netns exec red arp
@@ -144,7 +144,7 @@ ip link add v-net-0 type bridge (create a n/w i/f on host)
 ip link ( the above interface will also be listed )
 ip link set dev v-net-0 up ( it will act as switch for namespace and i/f for the host)
 ip link add veth-red type veth peer name veth-eth-br
-ip link add veth-red type veth peer name veth-eth-br
+ip link add veth-blue type veth peer name veth-eth-br
 ip link set veth-red/blue netns red/blue
 ip link set veth-red/blue-br master v-net-0
 ip -n red addr add 192.168.15.1 dev veth-red (assign ip to veth)
@@ -154,3 +154,24 @@ ip -n blue link set veth-blue up
 ip addr add 192.168.15.5/24 dev v-net-0      (now host and virtual internal n/w can connect)
 iptables -t mat -A POSTROUTING -s 192.168.15.0/24 -j MASQUERADE
 iptables -t nat -A PREROUTING --dport 80 --to-destination 192.168.15.2:80 -j DNAT
+
+
+nginx
+/etc/nginx/nginx.conf	Global NGINX settings
+/etc/nginx/sites-available/default	Active site config for reverse proxy
+/var/www/html	Not used in reverse proxy
+/var/log/nginx/access.log	Logs all requests
+
+
+ Create a private key and then generate a certificate request from it:
+
+        openssl genrsa -out key.pem 2048
+        openssl req -new -key key.pem -out req.pem
+
+       The same but just using req:
+
+        openssl req -newkey rsa:2048 -keyout key.pem -out req.pem
+
+       Generate a self-signed root certificate:
+
+        openssl req -x509 -newkey rsa:2048 -keyout key.pem -out req.pem
